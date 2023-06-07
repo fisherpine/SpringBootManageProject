@@ -189,7 +189,7 @@ $light_gray:#eee;
     padding: 35px 35px 0;
     margin: 0 auto;
     overflow: hidden;
-    border-radius: 9px;
+    border-radius: 11px;
   }
 
   .tips {
