@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="4" align="right">
                     <div class="grid-content bg-purple-light">
-                        <el-button type="primary" icon="el-icon-plus" circle></el-button>
+                        <el-button @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
                     </div>
                 </el-col>
             </el-row>
@@ -24,7 +24,7 @@
                 <el-table-column label="#" width="180">
                     <template slot-scope="scope">
                         <!--(pageNo-1)*pageSize + index + 1-->
-                        {{(searchModel.pageNo-1)*searchModel.pageSize+scope.$index+1}}
+                        {{ (searchModel.pageNo - 1) * searchModel.pageSize + scope.$index + 1 }}
                     </template>
                 </el-table-column>
                 <!--prop需要和和数组里元素对应-->
@@ -41,15 +41,38 @@
             </el-table>
         </el-card>
         <!--分页组件-->
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange" 
-            :current-page="searchModel.pageNo"
-            :page-sizes="[5,10,20,50]" 
-            :page-size="searchModel.pageSize" 
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            :current-page="searchModel.pageNo" :page-sizes="[5, 10, 20, 50]" :page-size="searchModel.pageSize"
+            layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
+        <!--用户信息编辑对话框-->
+        <el-dialog :title="title" :visible.sync="dialogFormVisible">
+            <el-form :model="userForm">
+                <el-form-item label="用户名" :label-width="formLabelWidth">
+                    <el-input v-model="userForm.username" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="登陆密码" :label-width="formLabelWidth">
+                    <el-input v-model="userForm.password" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="联系电话" :label-width="formLabelWidth">
+                    <el-input v-model="userForm.phone" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="用户状态" :label-width="formLabelWidth">
+                    <el-switch v-model="userForm.status" 
+                    :active-value="1"
+                    :inactive-value="0"
+                    >
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="电子邮件" :label-width="formLabelWidth">
+                    <el-input v-model="userForm.email" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -58,6 +81,10 @@ import userApi from '@/api/userManage'
 export default {
     data() {
         return {
+            formLabelWidth: '130px',
+            userForm: {},
+            dialogFormVisible: false,
+            title: "",
             total: 0,
             searchModel: {
                 pageNo: 1,
@@ -66,23 +93,27 @@ export default {
             userList: []
         }
     },
-    methods:{
-        handleSizeChange(pageSize){
+    methods: {
+        openEditUI() {
+            this.title = '新增用户';
+            this.dialogFormVisible = true;
+        },
+        handleSizeChange(pageSize) {
             this.searchModel.pageSize = pageSize;
             this.getUserList();
         },
-        handleCurrentChange(pageNo){
+        handleCurrentChange(pageNo) {
             this.searchModel.pageNo = pageNo;
             this.getUserList();
         },
-        getUserList(){
-            userApi.getUserList(this.searchModel).then(response =>{
+        getUserList() {
+            userApi.getUserList(this.searchModel).then(response => {
                 this.userList = response.data.row;
                 this.total = response.data.total;
             });
         }
     },
-    created(){
+    created() {
         this.getUserList();
     }
 };
@@ -92,5 +123,9 @@ export default {
 #search .el-input {
     width: 200px;
     margin-right: 10px;
+}
+
+.el-dialog .el-input {
+    width: 75%;
 }
 </style>
