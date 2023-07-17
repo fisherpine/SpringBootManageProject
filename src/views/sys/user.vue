@@ -67,7 +67,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="saveUser">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -78,11 +78,11 @@ import userApi from '@/api/userManage'
 export default {
     data() {
         var checkEmail = (rule, value, callback) => {
-            var reg =/^\w+@[a-z0-9]+\.[a-z]{2,4}$/;
+            var reg = /^\w+@[a-z0-9]+\.[a-z]{2,4}$/;
             if (!reg.test(value)) {
                 return callback(new Error('邮箱格式错误'));
             }
-            
+            callback();
         };
         return {
             formLabelWidth: '130px',
@@ -112,6 +112,28 @@ export default {
         }
     },
     methods: {
+        saveUser() {
+            //触发表单验证
+            this.$refs.userFormRef.validate((valid) => {
+                if (valid) {
+                    //提交请求给后台
+                    userApi.addUser(this.userForm).then(response => {
+                        //成功提示
+                        this.$message({
+                            message: response.message,
+                            type: 'success'
+                        });
+                        //关闭对话框
+                        this.dialogFormVisible = false;
+                        //刷新提示
+                        this.getUserList();
+                    });
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
+        },
         clearForm() {
             this.userForm = {};
             this.$refs.userFormRef.clearValidate();

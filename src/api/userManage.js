@@ -14,4 +14,11 @@ export default{
         }
     });
   },
+  addUser(user){
+    return request({
+      url: '/user',
+      method:'post',
+      data: user
+    });
+  },
 }
