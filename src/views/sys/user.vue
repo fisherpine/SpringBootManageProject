@@ -34,6 +34,12 @@
                 </el-table-column>
                 <el-table-column prop="phone" label="电话" width="180">
                 </el-table-column>
+                <el-table-column prop="status" label="用户状态" width="180">
+                    <template slot-scope="scope">
+                        <el-tag v-if="scope.row.status == 1">正常</el-tag>
+                        <el-tag v-else type="danger">禁用</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="email" label="电子邮箱">
                 </el-table-column>
                 <el-table-column label="操作" width="180">
