@@ -47,24 +47,21 @@
         </el-pagination>
         <!--用户信息编辑对话框-->
         <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible">
-            <el-form :model="userForm">
-                <el-form-item label="用户名" :label-width="formLabelWidth">
+            <el-form :model="userForm" :rules="rules">
+                <el-form-item label="用户名" prop="username" :label-width="formLabelWidth">
                     <el-input v-model="userForm.username" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="登陆密码" :label-width="formLabelWidth">
+                <el-form-item label="登陆密码" prop="password" :label-width="formLabelWidth">
                     <el-input v-model="userForm.password" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="联系电话" :label-width="formLabelWidth">
                     <el-input v-model="userForm.phone" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="用户状态" :label-width="formLabelWidth">
-                    <el-switch v-model="userForm.status" 
-                    :active-value="1"
-                    :inactive-value="0"
-                    >
+                    <el-switch v-model="userForm.status" :active-value="1" :inactive-value="0">
                     </el-switch>
                 </el-form-item>
-                <el-form-item label="电子邮件" :label-width="formLabelWidth">
+                <el-form-item label="电子邮件" prop="email" :label-width="formLabelWidth">
                     <el-input v-model="userForm.email" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -80,6 +77,13 @@
 import userApi from '@/api/userManage'
 export default {
     data() {
+        var checkEmail = (rule, value, callback) => {
+            var reg =/^\w+@[a-z0-9]+\.[a-z]{2,4}$/;
+            if (!reg.test(value)) {
+                return callback(new Error('邮箱格式错误'));
+            }
+            
+        };
         return {
             formLabelWidth: '130px',
             userForm: {},
@@ -90,12 +94,26 @@ export default {
                 pageNo: 1,
                 pageSize: 10
             },
-            userList: []
+            userList: [],
+            rules: {
+                username: [
+                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                    { min: 3, max: 50, message: '长度在 3 到 50 个字符', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                    { min: 3, max: 50, message: '长度在 3 到 50 个字符', trigger: 'blur' }
+                ],
+                email: [
+                    { required: true, message: '请输入电子邮件', trigger: 'blur' },
+                    { validator: checkEmail, trigger: 'blur' }
+                ],
+            }
         }
     },
     methods: {
-        clearForm(){
-            this.userForm={};
+        clearForm() {
+            this.userForm = {};
         },
         openEditUI() {
             this.title = '新增用户';
