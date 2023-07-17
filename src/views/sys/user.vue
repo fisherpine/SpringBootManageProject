@@ -5,9 +5,9 @@
             <el-row>
                 <el-col :span="20">
                     <div class="grid-content bg-purple">
-                        <el-input v-model="searchModel.username" placeholder="用户名"></el-input>
-                        <el-input v-model="searchModel.phone" placeholder="电话"></el-input>
-                        <el-button type="primary" round icon="el-icon-search">查询</el-button>
+                        <el-input v-model="searchModel.username" placeholder="用户名" clearable></el-input>
+                        <el-input v-model="searchModel.phone" placeholder="电话" clearable></el-input>
+                        <el-button @click="getUserList" type="primary" round icon="el-icon-search">查询</el-button>
                     </div>
                 </el-col>
                 <el-col :span="4" align="right">
@@ -21,7 +21,11 @@
         <!--结果列表-->
         <el-card>
             <el-table :data="userList" stripe style="width: 100%">
-                <el-table-column type="index" label="#" width="180">
+                <el-table-column label="#" width="180">
+                    <template slot-scope="scope">
+                        <!--(pageNo-1)*pageSize + index + 1-->
+                        {{(searchModel.pageNo-1)*searchModel.pageSize+scope.$index+1}}
+                    </template>
                 </el-table-column>
                 <!--prop需要和和数组里元素对应-->
                 <el-table-column prop="id" label="用户名ID" width="180">
@@ -36,7 +40,11 @@
                 </el-table-column>
             </el-table>
         </el-card>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="searchModel.pageNo"
+        <!--分页组件-->
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" 
+            :current-page="searchModel.pageNo"
             :page-sizes="[5,10,20,50]" 
             :page-size="searchModel.pageSize" 
             layout="total, sizes, prev, pager, next, jumper"
@@ -46,6 +54,7 @@
 </template>
 
 <script>
+import userApi from '@/api/userManage'
 export default {
     data() {
         return {
@@ -58,12 +67,23 @@ export default {
         }
     },
     methods:{
-        handleSizeChange(){
-
+        handleSizeChange(pageSize){
+            this.searchModel.pageSize = pageSize;
+            this.getUserList();
         },
-        handleCurrentChange(){
-
+        handleCurrentChange(pageNo){
+            this.searchModel.pageNo = pageNo;
+            this.getUserList();
+        },
+        getUserList(){
+            userApi.getUserList(this.searchModel).then(response =>{
+                this.userList = response.data.row;
+                this.total = response.data.total;
+            });
         }
+    },
+    created(){
+        this.getUserList();
     }
 };
 </script>
