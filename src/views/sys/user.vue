@@ -47,7 +47,7 @@
         </el-pagination>
         <!--用户信息编辑对话框-->
         <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible">
-            <el-form :model="userForm" :rules="rules">
+            <el-form :model="userForm" ref="userFormRef" :rules="rules">
                 <el-form-item label="用户名" prop="username" :label-width="formLabelWidth">
                     <el-input v-model="userForm.username" autocomplete="off"></el-input>
                 </el-form-item>
@@ -114,6 +114,7 @@ export default {
     methods: {
         clearForm() {
             this.userForm = {};
+            this.$refs.userFormRef.clearValidate();
         },
         openEditUI() {
             this.title = '新增用户';
