@@ -46,7 +46,7 @@
             layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
         <!--用户信息编辑对话框-->
-        <el-dialog :title="title" :visible.sync="dialogFormVisible">
+        <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible">
             <el-form :model="userForm">
                 <el-form-item label="用户名" :label-width="formLabelWidth">
                     <el-input v-model="userForm.username" autocomplete="off"></el-input>
@@ -94,6 +94,9 @@ export default {
         }
     },
     methods: {
+        clearForm(){
+            this.userForm={};
+        },
         openEditUI() {
             this.title = '新增用户';
             this.dialogFormVisible = true;
