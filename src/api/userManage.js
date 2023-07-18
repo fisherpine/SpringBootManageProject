@@ -21,4 +21,18 @@ export default{
       data: user
     });
   },
+  updateUser(user){
+    return request({
+      url: '/user',
+      method:'put',
+      data: user
+    });
+  },
+  getUserById(id){
+    return request({
+      // url: '/user/' + id,
+      url: `/user/${id}`,
+      method:'get',
+    });
+  },
 }
