@@ -12,7 +12,7 @@
                 </el-col>
                 <el-col :span="4" align="right">
                     <div class="grid-content bg-purple-light">
-                        <el-button @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
+                        <el-button @click="openEditUI(null)" type="primary" icon="el-icon-plus" circle></el-button>
                     </div>
                 </el-col>
             </el-row>
@@ -44,7 +44,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="180">
                     <template slot-scope="scope">
-                        <el-button type="primary" icon="el-icon-edit" size="mini" circle></el-button>
+                        <el-button @click="openEditUI(scope.row.id)" type="primary" icon="el-icon-edit" size="mini" circle></el-button>
                         <el-button type="danger" icon="el-icon-delete" size="mini" circle></el-button>
                     </template>
                 </el-table-column>
@@ -61,7 +61,8 @@
                 <el-form-item label="用户名" prop="username" :label-width="formLabelWidth">
                     <el-input v-model="userForm.username" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="登陆密码" prop="password" :label-width="formLabelWidth">
+                <el-form-item v-if="userForm.id == null || userForm.id == undefined"
+                label="登陆密码" prop="password" :label-width="formLabelWidth">
                     <el-input v-model="userForm.password" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="联系电话" :label-width="formLabelWidth">
@@ -127,7 +128,7 @@ export default {
             this.$refs.userFormRef.validate((valid) => {
                 if (valid) {
                     //提交请求给后台
-                    userApi.addUser(this.userForm).then(response => {
+                    userApi.saveUser(this.userForm).then(response => {
                         //成功提示
                         this.$message({
                             message: response.message,
@@ -148,8 +149,17 @@ export default {
             this.userForm = {};
             this.$refs.userFormRef.clearValidate();
         },
-        openEditUI() {
-            this.title = '新增用户';
+        openEditUI(id) {
+            if(id == null){
+                this.title = '新增用户';
+            }else{
+                this.title = '修改用户';
+                //根据id查询数用户数据
+                userApi.getUserById(id).then(response =>{
+                    this.userForm = response.data;
+                });
+            }
+            
             this.dialogFormVisible = true;
         },
         handleSizeChange(pageSize) {

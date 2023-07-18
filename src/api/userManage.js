@@ -28,6 +28,12 @@ export default{
       data: user
     });
   },
+  saveUser(user){
+    if(user.id == null && user.id == undefined){
+      return this.addUser(user);
+    }
+    return this.updateUser(user);
+  },
   getUserById(id){
     return request({
       // url: '/user/' + id,
